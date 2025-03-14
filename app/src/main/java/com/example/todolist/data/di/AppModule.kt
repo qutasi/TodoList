@@ -2,7 +2,10 @@ package com.example.todolist.data.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.todolist.data.local.daos.TodoDao
 import com.example.todolist.data.local.db.TodoDatabase
+import com.example.todolist.data.repositories.TodoRepository
+import com.example.todolist.data.repositories.TodoRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,5 +30,11 @@ object AppModule {
     @Provides
     @Singleton
     fun provideTodoDao(todoDatabase: TodoDatabase) = todoDatabase.todoDao()
+
+    @Singleton
+    @Provides
+    fun provideTodoRepository(todoDao: TodoDao) : TodoRepository {
+        return TodoRepositoryImpl(todoDao)
+    }
 
 }
