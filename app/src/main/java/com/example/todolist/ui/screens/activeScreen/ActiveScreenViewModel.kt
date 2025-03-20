@@ -2,6 +2,7 @@ package com.example.todolist.ui.screens.activeScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todolist.data.converters.DateConverter
 import com.example.todolist.data.models.Todo
 import com.example.todolist.data.repositories.TodoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,6 +54,26 @@ class ActiveScreenViewModel @Inject constructor(
 
     fun setDeadline(timestamp : Long) {
         deadline.value = Instant.ofEpochMilli(timestamp).atZone(ZoneId.systemDefault()).toLocalDate()
+    }
+
+    fun showDialog() {
+        showTodoDialog.value = true
+    }
+
+    fun hideDialog() {
+        showTodoDialog.value = false
+    }
+
+    fun getDeadLine() : String {
+        return DateConverter().dateToText(deadline.value)
+    }
+
+    fun showDatePicker() {
+        showTodoDatePicker.value = true
+    }
+
+    fun hideDatePicker() {
+        showTodoDatePicker.value = false
     }
 
     private fun copyTodo() {
