@@ -6,6 +6,7 @@ import com.example.todolist.data.converters.DateConverter
 import com.example.todolist.data.models.Todo
 import com.example.todolist.data.repositories.TodoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -18,7 +19,6 @@ import javax.inject.Inject
 class ActiveScreenViewModel @Inject constructor(
     private val todoRepository: TodoRepository
 ) : ViewModel() {
-
     init {
         getActiveTodos()
     }
@@ -105,23 +105,20 @@ class ActiveScreenViewModel @Inject constructor(
     }
 
     fun upsertTodo(todo : Todo) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             todoRepository.upsertTodo(todo)
         }
     }
 
     fun setTodoCompleted(todo : Todo) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             todoRepository.setTodoCompleted(todo)
         }
     }
 
     fun deleteTodo(todo : Todo) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             todoRepository.deleteTodo(todo)
         }
     }
-
-
-
 }

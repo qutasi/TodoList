@@ -9,7 +9,7 @@ import com.example.todolist.data.models.Todo
 
 @Database(
     entities = [Todo::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(DateConverter::class)
