@@ -1,8 +1,8 @@
 <div align="center">
-  <img src="todo_logo.png" alt="TodoApp Logo" width="200"/>
+  <img src="app/src/main/res/drawable/todo_logo.png" alt="TodoApp Logo" width="200"/>
 </div>
 
-<h3 align="center">TodoApp</h3>
+<h2 align="center">Todo Application</h2>
 
 <details>
   <summary>Table of Contents</summary>
@@ -36,7 +36,8 @@ Users can seamlessly switch between the two, with full CRUD support for each tod
 - 📅 Set deadlines for tasks
 - 🔀 Smooth navigation between **Active Todos** and **Completed Todos**
 - 🔍 Lightweight and fast with **Jetpack Compose**
-- 🔬 Includes **UI integration tests** 
+- 🔬 Includes **UI integration tests**
+<img src="app/src/main/res/drawable/todo_app.png" width="200"/>
 
 ---
 
