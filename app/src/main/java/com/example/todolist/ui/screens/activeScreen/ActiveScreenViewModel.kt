@@ -1,5 +1,6 @@
 package com.example.todolist.ui.screens.activeScreen
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todolist.data.converters.DateConverter
@@ -96,7 +97,8 @@ class ActiveScreenViewModel @Inject constructor(
         selectedTodo.value = null
     }
 
-    private fun getActiveTodos() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun getActiveTodos() {
         viewModelScope.launch {
             todoRepository.getActiveTodos()
                 .distinctUntilChanged()

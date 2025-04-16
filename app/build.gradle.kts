@@ -40,6 +40,9 @@ android {
     buildFeatures {
         compose = true
     }
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 }
 
 dependencies {
@@ -78,4 +81,9 @@ dependencies {
     //Hilt-ksp
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    implementation ("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    //Kotest
+    testImplementation(libs.bundles.kotest)
+
 }

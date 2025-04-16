@@ -16,6 +16,10 @@ class DoneScreenViewModel @Inject constructor(
     private val todoRepository: TodoRepository
 ) : ViewModel() {
 
+    init {
+        getDoneTodos()
+    }
+
     var todos = MutableStateFlow<List<Todo>>(emptyList())
         private set
 
@@ -27,7 +31,7 @@ class DoneScreenViewModel @Inject constructor(
         }
     }
 
-    private fun deleteTodos(todo : Todo) {
+    fun deleteTodos(todo : Todo) {
         viewModelScope.launch {
             todoRepository.deleteTodo(todo)
         }
@@ -38,4 +42,5 @@ class DoneScreenViewModel @Inject constructor(
             todoRepository.setTodoActive(todo)
         }
     }
+
 }

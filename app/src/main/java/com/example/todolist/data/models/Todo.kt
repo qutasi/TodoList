@@ -6,11 +6,11 @@ import java.time.LocalDate
 
 @Entity(tableName = "todos")
 data class Todo(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int? = null,
     val title: String,
     val description: String,
-    val isDone: Boolean = false,
     val deadline: LocalDate,
-    val createdAt: LocalDate = LocalDate.now()
+    @PrimaryKey(autoGenerate = true)
+    val todoId : Int? = null,
+    val isDone: Boolean = false,
+    val createdAt: LocalDate = LocalDate.now(),
 )

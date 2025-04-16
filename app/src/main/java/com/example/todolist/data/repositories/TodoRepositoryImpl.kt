@@ -10,6 +10,7 @@ import javax.inject.Inject
 class TodoRepositoryImpl @Inject constructor(
     private val todoDao: TodoDao
 ) : TodoRepository {
+
     override fun getActiveTodos(): Flow<List<Todo>> {
         return todoDao.getActiveTodos().catch {
             Log.e("ActiveTodos", "getActiveTodos: ${it.message.toString()}")

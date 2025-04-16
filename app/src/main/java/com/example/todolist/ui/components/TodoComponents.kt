@@ -1,7 +1,5 @@
 package com.example.todolist.ui.components
 
-import android.app.Dialog
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
@@ -21,14 +20,17 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,9 +46,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.todolist.data.converters.DateConverter
 import com.example.todolist.data.models.Todo
 import com.example.todolist.ui.screens.activeScreen.ActiveScreenViewModel
 
@@ -81,10 +82,11 @@ fun TodoButton(
 
 @Composable
 fun TodoInput(
-    value : String,
-    onValueChange : (String) -> Unit,
-    label : @Composable () -> Unit,
+    value: String,
+    onValueChanged: (String) -> Unit,
+    label: @Composable () -> Unit
 ) {
+
     var text by remember { mutableStateOf(value) }
     val keyboard = LocalSoftwareKeyboardController.current
 
@@ -92,7 +94,7 @@ fun TodoInput(
         value = text,
         onValueChange = {
             text = it
-            onValueChange(it)
+            onValueChanged(it)
         },
         label = label,
         keyboardActions = KeyboardActions(
@@ -109,12 +111,12 @@ fun TodoInput(
 }
 
 @Composable
-fun TodoDialog(
-    viewModel: ActiveScreenViewModel,
+fun TodoDialog (
+    viewModel: ActiveScreenViewModel
 ) {
     val title by viewModel.title.collectAsStateWithLifecycle()
     val description by viewModel.description.collectAsStateWithLifecycle()
-    val deadLine by viewModel.deadline.collectAsStateWithLifecycle()
+    val deadline by viewModel.deadline.collectAsStateWithLifecycle()
     val selectedTodo by viewModel.selectedTodo.collectAsStateWithLifecycle()
 
     Dialog(
@@ -131,13 +133,15 @@ fun TodoDialog(
             ) {
                 TodoInput(
                     value = title,
-                    onValueChange = { viewModel.setTitle(it) },
+                    onValueChanged = {
+                        viewModel.setTitle(it)
+                    }
                 ) {
-                    TodoText(text ="Todo Title")
+                    TodoText(text = "Todo Title")
                 }
                 TodoInput(
                     value = description,
-                    onValueChange = {
+                    onValueChanged = {
                         viewModel.setDescription(it)
                     }
                 ) {
@@ -146,13 +150,12 @@ fun TodoDialog(
                 TodoButton(
                     buttonText = {
                         TodoText(
-                            text = viewModel.getDeadLine()
+                            text = DateConverter().dateToText(deadline)
                         )
                     }
                 ) {
                     viewModel.showDatePicker()
                 }
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -174,19 +177,15 @@ fun TodoDialog(
                             )
                         }
                     ) {
-                        if(title.isNotBlank() && description.isNotBlank()) {
-                            val upsertTodo = Todo(
-                                id = selectedTodo?.id,
-                                title = title.trim(),
-                                description = description.trim(),
-                                deadline = deadLine
-                            )
-                            viewModel.upsertTodo(upsertTodo)
-                            viewModel.reset()
-                            viewModel.hideDialog()
-                        } else {
-                            error("failed to save todo")
-                        }
+                        val todo = Todo(
+                            todoId = selectedTodo?.todoId,
+                            title = title,
+                            description = description,
+                            deadline = deadline
+                        )
+                        viewModel.upsertTodo(todo)
+                        viewModel.hideDialog()
+                        viewModel.reset()
                     }
                 }
             }
@@ -196,23 +195,25 @@ fun TodoDialog(
 
 @Composable
 fun TodoCard(
-    todo : Todo,
-    getDeadLine : () -> String,
-    onEdit : () -> Unit,
-    onDelete : () -> Unit,
-    setToCompleted : () -> Unit
+    todo: Todo,
+    deadline: String,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    setToCompleted: () -> Unit
 ) {
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 5.dp),
+            .height(150.dp)
+            .padding(horizontal = 5.dp)
+        ,
         border = BorderStroke(width = 1.dp, color = Color.Black),
-        shape = RoundedCornerShape(corner = CornerSize(10.dp)),
-        shadowElevation = 5.dp
+        shape = RoundedCornerShape(corner = CornerSize(10.dp))
     ) {
         Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(
                 modifier = Modifier.fillMaxHeight(),
@@ -220,20 +221,19 @@ fun TodoCard(
             ) {
                 TodoText(
                     text = todo.title,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20
+                    fontSize = 20,
+                    fontWeight = FontWeight.Bold
                 )
                 TodoText(
                     text = todo.description
                 )
                 TodoText(
-                    text = getDeadLine(),
-                    color = Color.Gray
+                    text = deadline
                 )
             }
             ActionIcons(
                 onEdit = onEdit,
-                onDelete = onDelete,
+                onDelete = onDelete
             ) {
                 setToCompleted()
             }
@@ -266,19 +266,57 @@ fun ActionIcons(
         ) {
             onDelete()
         }
-        Button(
-            onClick = { setToCompleted() },
-            colors = ButtonDefaults.buttonColors(Color.Green),
-            shape = CircleShape,
-            border = BorderStroke(1.dp, Color.Gray)
+        TodoButton(
+            buttonText = {
+                Icon(imageVector = Icons.Default.Done, contentDescription = "Set To completed")
+            }
         ) {
-            Icon(imageVector = Icons.Default.Done, contentDescription = "complete todo")
+            setToCompleted()
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TodoDatePicker(
+    dismiss: () -> Unit,
+    selectDate: (Long) -> Unit
+) {
+    val datePickerState = rememberDatePickerState(
 
-
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return System.currentTimeMillis() < utcTimeMillis
+            }
+        }
+    )
+    DatePickerDialog(
+        onDismissRequest = dismiss,
+        confirmButton = {
+            TodoButton(
+                buttonText = {
+                    TodoText(text = "Select")
+                }
+            ) {
+                datePickerState.selectedDateMillis?.let {
+                    selectDate(it)
+                }
+                dismiss()
+            }
+        },
+        dismissButton = {
+            TodoButton(
+                buttonText = {
+                    TodoText(text = "Cancel")
+                }
+            ){
+                dismiss()
+            }
+        }
+    ) {
+        DatePicker(state = datePickerState)
+    }
+}
 
 
 

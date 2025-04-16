@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import com.example.todolist.ui.navigation.TodoNavigation
 import com.example.todolist.ui.screens.activeScreen.ActiveScreen
 import com.example.todolist.ui.screens.activeScreen.ActiveScreenViewModel
 import com.example.todolist.ui.theme.TodoListTheme
@@ -18,7 +19,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel : ActiveScreenViewModel by viewModels()
             TodoListTheme {
-                ActiveScreen(viewModel)
+                TodoNavigation()
             }
         }
     }
