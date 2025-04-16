@@ -1,5 +1,6 @@
 package com.example.todolist.ui.screens.doneScreen
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todolist.data.models.Todo
@@ -23,6 +24,7 @@ class DoneScreenViewModel @Inject constructor(
     var todos = MutableStateFlow<List<Todo>>(emptyList())
         private set
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     private fun getDoneTodos() {
         viewModelScope.launch {
             todoRepository.getDoneTodos()
